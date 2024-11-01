@@ -1,0 +1,64 @@
+Імпорт бібліотек
+
+    import cv2
+    import tkinter as tk
+    from PIL import Image, ImageTk
+
+cv2: бібліотека OpenCV для обробки зображень і відео.
+tkinter: стандартна бібліотека для створення графічних інтерфейсів у Python.
+PIL (Python Imaging Library): імплементує функції для роботи з зображеннями, зокрема клас Image для роботи з зображеннями і ImageTk для інтеграції з Tkinter.
+
+
+
+Створення вікна
+
+    window = tk.Tk()
+    window.title("OCV Tkinter")
+
+
+
+Створення фрейму для зображення
+
+    imageFrame = tk.Frame(window, width=600, height=500)
+    imageFrame.grid(row=0, column=0, padx=10, pady=2)
+
+Створюємо фрейм (контейнер) для відображення відеопотоку з фіксованими шириною і висотою. Розміщуємо його на сітці (grid) з відступами.
+
+
+
+Додавання мітки для зображення
+
+    label = tk.Label(imageFrame)
+    label.grid(row=0, column=0)
+
+Створюємо мітку (label), на якій будемо відображати зображення з відеопотоку. Розміщуємо її в imageFrame.
+
+
+
+Налаштування відеозахоплення
+
+    cap = cv2.VideoCapture(0)
+Відкриваємо веб-камеру (0 — індекс камери, зазвичай нульовий індекс позначає першу доступну камеру).
+
+
+Функція для відображення кадрів
+
+    def show_frame():
+        ret, frame = cap.read()
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame = cv2.flip(frame, 1)
+        img = Image.fromarray(frame)
+        imgtk = ImageTk.PhotoImage(image=img)
+        label.image = imgtk
+        label.configure(image=imgtk)
+        label.after(10, show_frame)
+        
+show_frame(): функція для захоплення та відображення кадрів з камери.
+ret, frame = cap.read(): читає кадр з камери. ret — булеве значення, що показує, чи вдалося прочитати кадр.
+cv2.cvtColor(frame, cv2.COLOR_BGR2RGB): конвертує колір з формату BGR (використовуваного OpenCV) в RGB (використовуваного в Tkinter).
+cv2.flip(frame, 1): відображає зображення дзеркально (по горизонталі).
+Image.fromarray(frame): перетворює масив зображення у формат, зрозумілий PIL.
+ImageTk.PhotoImage(image=img): створює об'єкт для відображення в Tkinter.
+label.image = imgtk: зберігає зображення в атрибуті мітки (щоб уникнути звільнення пам’яті).
+label.configure(image=imgtk): оновлює мітку, щоб відобразити нове зображення.
+label.after(10, show_frame): викликає функцію show_frame через 10 мс для повторного відображення наступного кадру.
